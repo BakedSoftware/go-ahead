@@ -58,6 +58,12 @@ func (p *PermissionSet) Set(indices ...uint) *PermissionSet {
 
 // Union is the equivalent of the |= other
 func (p *PermissionSet) Union(other *PermissionSet) *PermissionSet {
+	for i, e := other.bits.NextSet(0); e; i, e = other.bits.NextSet(i + 1) {
+		p.Set(i)
+		if child, exists := other.children[i]; exists {
+			p.Child(i).Union(child)
+		}
+	}
 	p.bits.InPlaceUnion(&other.bits)
 	return p
 }
