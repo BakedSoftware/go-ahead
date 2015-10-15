@@ -155,6 +155,13 @@ func UnmarshalJSON(data []byte) (*PermissionSet, error) {
 	if err = set.bits.UnmarshalJSON([]byte(str)); err != nil {
 		return nil, err
 	}
+	if childData, exists := intermediate["children"]; exists {
+		set.children = make(map[uint]*PermissionSet)
+		for k, v := range childData.(map[string]interface{}) {
+			key, _ := strconv.ParseUint(k, 10, 64)
+			set.children[uint(key)], _ = UnmarshalJSON([]byte(v.(string)))
+		}
+	}
 
 	return set, nil
 }
