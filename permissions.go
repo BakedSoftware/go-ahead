@@ -108,7 +108,7 @@ func (p *PermissionSet) Walk(indices ...uint) bool {
 			return false
 		}
 	}
-	return false
+	return true
 }
 
 // All returns true iff all bits are set
