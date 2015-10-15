@@ -56,6 +56,12 @@ func (p *PermissionSet) Set(indices ...uint) *PermissionSet {
 	return p
 }
 
+// Union is the equivalent of the |= other
+func (p *PermissionSet) Union(other *PermissionSet) *PermissionSet {
+	p.bits.InPlaceUnion(&other.bits)
+	return p
+}
+
 func (p *PermissionSet) Clear(indices ...uint) *PermissionSet {
 	for _, i := range indices {
 		p.bits.Clear(i)
