@@ -2,6 +2,9 @@
 package goahead
 
 import (
+	"encoding/json"
+	"strconv"
+
 	"github.com/willf/bitset"
 )
 
@@ -116,4 +119,42 @@ func (p *PermissionSet) Any(indices ...uint) bool {
 
 func (p *PermissionSet) Len() uint {
 	return p.bits.Len()
+}
+
+func (p *PermissionSet) MarshalJSON() ([]byte, error) {
+	data := make(map[string]interface{})
+	data["ID"] = p.ID
+	str, _ := p.bits.MarshalJSON()
+	data["bits"] = string(str)
+
+	if p.children != nil {
+		children := make(map[string]string)
+		for k, v := range p.children {
+			if b, err := v.MarshalJSON(); err != nil {
+				return nil, err
+			} else {
+				children[strconv.Itoa(int(k))] = string(b)
+			}
+		}
+		data["children"] = children
+	}
+
+	return json.Marshal(data)
+}
+
+func UnmarshalJSON(data []byte) (*PermissionSet, error) {
+	intermediate := make(map[string]interface{})
+	err := json.Unmarshal(data, &intermediate)
+	if err != nil {
+		return nil, err
+	}
+
+	set := new(PermissionSet)
+	set.ID = uint64(intermediate["ID"].(float64))
+	str := intermediate["bits"].(string)
+	if err = set.bits.UnmarshalJSON([]byte(str)); err != nil {
+		return nil, err
+	}
+
+	return set, nil
 }
