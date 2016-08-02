@@ -68,6 +68,17 @@ func (p *PermissionSet) Union(other *PermissionSet) *PermissionSet {
 	return p
 }
 
+func (p *PermissionSet) InPlaceIntersection(other *PermissionSet) *PermissionSet {
+	for i, e := other.bits.NextSet(0); e; i, e = other.bits.NextSet(i + 1) {
+		p.Set(i)
+		if child, exists := other.children[i]; exists {
+			p.Child(i).InPlaceIntersection(child)
+		}
+	}
+	p.bits.InPlaceIntersection(&other.bits)
+	return p
+}
+
 func (p *PermissionSet) Clear(indices ...uint) *PermissionSet {
 	for _, i := range indices {
 		p.bits.Clear(i)
@@ -176,4 +187,15 @@ func UnmarshalJSON(data []byte) (*PermissionSet, error) {
 	}
 
 	return set, nil
+}
+
+// Bytes returns the underling storag. The indices correspond to walking through
+// the children.
+func (p *PermissionSet) Bytes(indices ...uint) []uint64 {
+	var set *PermissionSet
+	set = p
+	for _, idx := range indices {
+		set = set.Child(idx)
+	}
+	return set.bits.Bytes()
 }
