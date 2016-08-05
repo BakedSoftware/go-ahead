@@ -199,3 +199,8 @@ func (p *PermissionSet) Bytes(indices ...uint) []uint64 {
 	}
 	return set.bits.Bytes()
 }
+
+// IsEmpty returns true if no bits are set
+func (p *PermissionSet) IsEmpty() bool {
+	return p.bits.None()
+}
