@@ -205,7 +205,6 @@ func (p *PermissionSet) Bytes(indices ...uint) []uint64 {
 func (p *PermissionSet) IsEmpty() bool {
 	return p.bits.None()
 }
-
-func (p *permissionset) bitstring() string {
-	return p.bits.dumpasbits()
+func (p *PermissionSet) BitString() string {
+	return p.bits.DumpAsBits()
 }
