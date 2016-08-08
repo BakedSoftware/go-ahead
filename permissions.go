@@ -70,9 +70,10 @@ func (p *PermissionSet) Union(other *PermissionSet) *PermissionSet {
 
 func (p *PermissionSet) InPlaceIntersection(other *PermissionSet) *PermissionSet {
 	for i, e := other.bits.NextSet(0); e; i, e = other.bits.NextSet(i + 1) {
-		p.Set(i)
-		if child, exists := other.children[i]; exists {
-			p.Child(i).InPlaceIntersection(child)
+		if p.Has(i) {
+			if child, exists := other.children[i]; exists {
+				p.Child(i).InPlaceIntersection(child)
+			}
 		}
 	}
 	p.bits.InPlaceIntersection(&other.bits)
@@ -203,4 +204,8 @@ func (p *PermissionSet) Bytes(indices ...uint) []uint64 {
 // IsEmpty returns true if no bits are set
 func (p *PermissionSet) IsEmpty() bool {
 	return p.bits.None()
+}
+
+func (p *permissionset) bitstring() string {
+	return p.bits.dumpasbits()
 }
