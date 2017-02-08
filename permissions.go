@@ -275,7 +275,7 @@ func (p *PermissionSet) UnmarshalBinary(data []byte) error {
 				return err
 			}
 			p.children[uint(idx)] = child
-			offset += 8 + childSize + 1
+			offset += 8 + childSize
 		}
 	}
 	return nil
